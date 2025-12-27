@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Jewel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    background: black;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ===== COUNTDOWN ===== */
+#countdown {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 6vw;
+    font-weight: bold;
+    text-shadow: 0 0 30px white;
+}
+
+/* ===== GIFT ===== */
+#gift {
+    display: none;
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+#gift img {
+    width: 180px;
+    animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+
+/* ===== UNDERTALE LIGHT ===== */
+#light {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: white;
+    animation: fadeInOut 5s ease-in-out forwards;
+    z-index: 10;
+}
+
+@keyframes fadeInOut {
+    0%   { opacity: 0; }
+    50%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ===== VIDEO ===== */
+#video {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: black;
+    z-index: 5;
+}
+
+#video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+</style>
+</head>
+
+<body>
+
+<div id="countdown"></div>
+
+<div id="gift">
+    <img src="shine-old-wooden-chest-realistic-composition-transparent-background-with-vintage-coffer-sparkling-particles.png">
+</div>
+
+<div id="light"></div>
+
+<div id="video">
+    <video id="nyVideo" src="Happy new Year.mp4" playsinline></video>
+</div>
+
+<audio id="sfx" src="Undertale - Exit sound effect.mp3"></audio>
+
+<script>
+// ===== TARGET TIME =====
+const targetDate = new Date("January 1, 2026 00:00:00 GMT+0000");
+
+const countdown = document.getElementById("countdown");
+const gift = document.getElementById("gift");
+const light = document.getElementById("light");
+const videoBox = document.getElementById("video");
+const video = document.getElementById("nyVideo");
+const sfx = document.getElementById("sfx");
+
+// ===== COUNTDOWN =====
+function updateCountdown() {
+    const diff = targetDate - Date.now();
+
+    if (diff <= 0) {
+        countdown.style.display = "none";
+        gift.style.display = "flex";
+        clearInterval(timer);
+        return;
+    }
+
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor(diff / 3600000) % 24;
+    const m = Math.floor(diff / 60000) % 60;
+    const s = Math.floor(diff / 1000) % 60;
+
+    countdown.textContent = `${d}d ${h}h ${m}m ${s}s`;
+}
+
+const timer = setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ===== CLICK GIFT =====
+gift.addEventListener("click", () => {
+    gift.style.display = "none";
+
+    sfx.currentTime = 0;
+    sfx.play();
+
+    light.style.display = "block";
+
+    // ครบ 5 วิ → video เล่นทันที
+    setTimeout(() => {
+        light.style.display = "none";
+        videoBox.style.display = "block";
+        video.currentTime = 0;
+        video.play();
+    }, 5000);
+});
+</script>
+
+</body>
+</html>
