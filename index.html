@@ -49,7 +49,7 @@ html, body {
     to { transform: scale(1.08); }
 }
 
-/* ===== UNDERTALE LIGHT ===== */
+/* ===== LIGHT ===== */
 #light {
     display: none;
     position: absolute;
@@ -74,12 +74,11 @@ html, body {
     z-index: 5;
 }
 
-/* ซูม iframe ให้ UI หลุดจอ */
-#video iframe {
-    width: 120%;
-    height: 120%;
-    transform: translate(-10%, -10%);
-    border: none;
+/* ซ่อน UI แต่ไม่กินขอบ */
+#player {
+    width: 108%;
+    height: 108%;
+    transform: translate(-4%, -4%);
 }
 </style>
 </head>
@@ -95,15 +94,12 @@ html, body {
 <div id="light"></div>
 
 <div id="video">
-    <iframe
-        id="ytVideo"
-        src=""
-        allow="autoplay; encrypted-media; fullscreen"
-        allowfullscreen>
-    </iframe>
+    <div id="player"></div>
 </div>
 
 <audio id="sfx" src="Undertale-Exitsoundeffect.mp3"></audio>
+
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 // ===== TARGET TIME =====
@@ -113,56 +109,67 @@ const countdown = document.getElementById("countdown");
 const gift = document.getElementById("gift");
 const light = document.getElementById("light");
 const videoBox = document.getElementById("video");
-const ytVideo = document.getElementById("ytVideo");
 const sfx = document.getElementById("sfx");
+
+let player;
 
 // ===== COUNTDOWN =====
 function updateCountdown() {
     const diff = targetDate - Date.now();
-
     if (diff <= 0) {
         countdown.style.display = "none";
         gift.style.display = "flex";
         clearInterval(timer);
         return;
     }
-
     const d = Math.floor(diff / 86400000);
     const h = Math.floor(diff / 3600000) % 24;
     const m = Math.floor(diff / 60000) % 60;
     const s = Math.floor(diff / 1000) % 60;
-
     countdown.textContent = `${d}d ${h}h ${m}m ${s}s`;
 }
-
 const timer = setInterval(updateCountdown, 1000);
 updateCountdown();
+
+// ===== YouTube API =====
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        videoId: 'DxMY4GUE_ms',
+        playerVars: {
+            autoplay: 1,
+            controls: 0,
+            rel: 0,
+            modestbranding: 1,
+            playsinline: 1,
+            mute: 1
+        },
+        events: {
+            onReady: e => e.target.playVideo()
+        }
+    });
+}
 
 // ===== CLICK GIFT =====
 gift.addEventListener("click", () => {
     gift.style.display = "none";
 
-    // sound effect
     sfx.currentTime = 0;
     sfx.play();
 
     light.style.display = "block";
 
-    // หลังแสง 5 วิ → เปิด YouTube
     setTimeout(() => {
         light.style.display = "none";
         videoBox.style.display = "block";
-
-        ytVideo.src =
-          "https://www.youtube.com/embed/DxMY4GUE_ms" +
-          "?autoplay=1" +
-          "&mute=1" +
-          "&controls=0" +
-          "&modestbranding=1" +
-          "&rel=0" +
-          "&showinfo=0" +
-          "&playsinline=1";
     }, 5000);
+});
+
+// ===== CLICK VIDEO = เปิดเสียง =====
+videoBox.addEventListener("click", () => {
+    if (player && player.isMuted()) {
+        player.unMute();
+        player.setVolume(100);
+    }
 });
 </script>
 
